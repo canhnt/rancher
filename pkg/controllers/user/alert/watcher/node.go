@@ -203,6 +203,11 @@ func (w *NodeWatcher) checkNodeCPUUsage(alert *v3.ClusterAlert, machine *v3.Node
 
 func (w *NodeWatcher) checkNodeReady(alert *v3.ClusterAlert, machine *v3.Node) {
 	alertID := alert.Namespace + "-" + alert.Name
+	if machine == nil || machine.Status.InternalNodeStatus.Conditions == nil {
+		logrus.Warningf("Nil pointer catching from TCloud")
+		return
+	}
+
 	for _, cond := range machine.Status.InternalNodeStatus.Conditions {
 		if cond.Type == corev1.NodeReady {
 			if cond.Status != corev1.ConditionTrue {
